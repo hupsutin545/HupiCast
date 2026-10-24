@@ -20,6 +20,7 @@ HupiCast koostuu kahdesta sovelluksesta:
 |---|---|
 | **HupiCast** | Puhelimen näytön lähettäminen |
 | **HupiCastTV** | Näytön vastaanottaminen ja näyttäminen televisiossa |
+Lataa sovellukset linkistä: https://github.com/hupsutin545/HupiCast/archive/refs/heads/main.zip
 
 ## Käyttöönotto
 

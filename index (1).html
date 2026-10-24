@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="HupiCastin palvelutilanne, tunnetut häiriöt ja vianmääritysohjeet.">
+  <title>HupiCast – palvelun tila</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1220; --panel:#121d30; --panel2:#17243a; --text:#edf4ff; --muted:#a8b7ce; --line:#2b3b55; --blue:#78b7ff; --green:#4ade80; --yellow:#facc15; --red:#fb7185; }
+    * { box-sizing:border-box }
+    body { margin:0; background:radial-gradient(ellipse at top,#172b49 0%,var(--bg) 52%); color:var(--text); font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+    .wrap { width:min(920px,calc(100% - 32px)); margin:0 auto; padding:38px 0 56px }
+    header { display:flex; align-items:center; gap:14px; margin-bottom:28px }
+    .logo { display:grid; place-items:center; width:48px; height:48px; border-radius:15px; background:linear-gradient(135deg,#60a5fa,#2563eb); color:#071326; font-size:24px; font-weight:900; box-shadow:0 8px 28px #2563eb35 }
+    h1,h2,h3,p { margin-top:0 }
+    h1 { font-size:clamp(1.8rem,5vw,2.5rem); letter-spacing:-.04em; margin-bottom:2px }
+    h2 { font-size:1.15rem; margin-bottom:14px }
+    .sub,.muted { color:var(--muted) }
+    .sub { margin:0 }
+    .hero,.card { border:1px solid var(--line); background:linear-gradient(150deg,#15233a,#101a2b); border-radius:20px; padding:24px; margin-bottom:18px; box-shadow:0 16px 45px #00000018 }
+    .statusline { display:flex; align-items:center; gap:12px; font-size:1.25rem; font-weight:750; margin-bottom:8px }
+    .dot { width:13px; height:13px; border-radius:50%; background:var(--yellow); box-shadow:0 0 0 5px #facc1520; flex:none }
+    .small { font-size:.9rem; color:var(--muted) }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px }
+    .service { background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:16px }
+    .service strong { display:block; margin-bottom:4px }
+    .service-state { color:var(--yellow); font-size:.92rem }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px }
+    button,.button { border:1px solid #3b82f6; border-radius:12px; padding:11px 16px; background:#2563eb; color:white; font:inherit; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center }
+    button:hover,.button:hover { background:#1d4ed8 }
+    button.secondary,.button.secondary { background:transparent; border-color:var(--line); color:var(--text) }
+    button:focus-visible,a:focus-visible,summary:focus-visible { outline:3px solid var(--blue); outline-offset:3px }
+    .notice { border-left:4px solid var(--yellow); padding:12px 14px; background:#facc1510; border-radius:0 10px 10px 0; color:#fce9a4 }
+    .faq { border-bottom:1px solid var(--line); padding:14px 0 }
+    .faq:last-child { border-bottom:0; padding-bottom:0 }
+    summary { cursor:pointer; font-weight:700 }
+    details p { margin:10px 0 0; color:var(--muted) }
+    .checklist { display:grid; gap:10px; margin:0; padding:0; list-style:none }
+    .checklist li { display:flex; gap:10px; align-items:flex-start; background:var(--panel2); border-radius:12px; padding:12px }
+    .checklist input { margin-top:5px; width:17px; height:17px; accent-color:#60a5fa; flex:none }
+    .report { display:grid; gap:12px }
+    label { display:block; font-weight:650; margin-bottom:5px }
+    input[type=text],select,textarea { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:#0b1424; color:var(--text); font:inherit }
+    textarea { min-height:100px; resize:vertical }
+    .report-result { white-space:pre-wrap; background:#08111f; border:1px solid var(--line); padding:14px; border-radius:10px; overflow-wrap:anywhere; display:none }
+    footer { text-align:center; color:var(--muted); font-size:.9rem; padding-top:12px }
+    @media(max-width:620px) { .grid { grid-template-columns:1fr } .hero,.card { padding:18px } header { align-items:flex-start } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true">H</div>
+      <div>
+        <h1>HupiCast</h1>
+        <p class="sub">Palvelun tila ja vianmääritys</p>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="current-status">
+      <div class="statusline" id="current-status"><span class="dot" aria-hidden="true"></span><span id="status-title">Tila ei ole automaattisesti varmennettu</span></div>
+      <p id="status-description">Tämä sivu ei ole yhteydessä HupiCastTV-laitteeseesi. Tarkista alla olevat yhteydet ja kokeile vianmääritysohjeita.</p>
+      <p class="small">Sivun viimeisin paikallinen tarkistus: <time id="last-check">ei vielä tarkistettu</time></p>
+      <div class="actions">
+        <button id="refresh-status" type="button">Päivitä sivun tila</button>
+        <a class="button secondary" href="#troubleshooting">Avaa vianmääritys</a>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="components-title">
+      <h2 id="components-title">Tarkistettavat osat</h2>
+      <div class="grid">
+        <div class="service"><strong>HupiCast Android-sovellus</strong><span class="service-state">Tarkistettava omalla laitteella</span><p class="small">Avaa sovellus ja kokeile käynnistää peilaus.</p></div>
+        <div class="service"><strong>HupiCastTV</strong><span class="service-state">Tarkistettava vastaanottavalla laitteella</span><p class="small">Varmista, että TV-sovellus on käynnissä.</p></div>
+        <div class="service"><strong>Laitteiden etsintä</strong><span class="service-state">Riippuu lähiverkosta</span><p class="small">Molempien laitteiden tulee olla samassa lähiverkossa.</p></div>
+        <div class="service"><strong>Paikallinen TCP-yhteys</strong><span class="service-state">Portti 8765</span><p class="small">Reititin tai palomuuri voi estää yhteyden.</p></div>
+      </div>
+      <p class="notice" style="margin:16px 0 0">Tämä on staattinen tilasivu. Päivityspainike päivittää tarkistusajan, mutta ei tee verkkotestiä eikä muuta palvelun todellista tilaa.</p>
+    </section>
+
+    <section class="card" id="troubleshooting">
+      <h2>Vianmääritys</h2>
+      <div class="faq"><details><summary>HupiCastTV ei löydy</summary><p>Käynnistä HupiCastTV ja yritä etsiä laite uudelleen. Tarkista, että puhelin ja TV ovat samassa Wi-Fi-verkossa. Reitittimen asiakaseristys tai vierasverkko voi estää laitteiden löytämisen.</p></details></div>
+      <div class="faq"><details><summary>Parituskoodi ei toimi</summary><p>Käytä HupiCastTV-sovelluksessa parhaillaan näkyvää koodia. Jos TV-sovellus käynnistetään uudelleen ja koodi vaihtuu, etsi laite uudelleen puhelimella.</p></details></div>
+      <div class="faq"><details><summary>Peilaus ei käynnisty</summary><p>Hyväksy Androidin näytönkaappauslupapyyntö. Jos olet aiemmin peruuttanut luvan, yritä käynnistää peilaus uudelleen ja hyväksy pyyntö.</p></details></div>
+      <div class="faq"><details><summary>TV:ssä ei näy kuvaa</summary><p>Varmista, että yhteys muodostuu ja että HupiCastTV on auki. Tarkista sovellusten lokit, jos kehität projektia Android Studiossa. HupiCast käyttää tässä toteutuksessa TCP-porttia 8765.</p></details></div>
+      <div class="faq"><details><summary>Kuva pysähtyy tai yhteys katkeaa</summary><p>Tarkista Wi-Fi-yhteyden vakaus, pidä laitteet samassa lähiverkossa ja kokeile käynnistää molemmat sovellukset uudelleen. Heikko signaali voi aiheuttaa viivettä.</p></details></div>
+    </section>
+
+    <section class="card">
+      <h2>Oma vianmääritystarkistus</h2>
+      <p class="muted">Merkitse kokeilemasi vaiheet. Valinnat säilyvät vain tällä sivulla avoinnaolon ajan.</p>
+      <ul class="checklist">
+        <li><input type="checkbox" id="c1"><label for="c1">Puhelin ja TV ovat samassa Wi-Fi-verkossa.</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2">HupiCastTV on käynnissä ja parituskoodi on ajantasainen.</label></li>
+        <li><input type="checkbox" id="c3"><label for="c3">Hyväksyin Androidin näytönkaappausluvan.</label></li>
+        <li><input type="checkbox" id="c4"><label for="c4">Yritin käynnistää molemmat sovellukset uudelleen.</label></li>
+      </ul>
+      <div class="actions"><button class="secondary" type="button" id="reset-checks">Tyhjennä valinnat</button></div>
+    </section>
+
+    <section class="card">
+      <h2>Luo GitHub-vikailmoitus</h2>
+      <p class="muted">Täytä tiedot, niin sivu muodostaa kopioitavan vikailmoitustekstin. Se ei lähetä tietoja automaattisesti GitHubiin.</p>
+      <form class="report" id="issue-form">
+        <div><label for="issue-type">Ongelma</label><select id="issue-type"><option>HupiCastTV ei löydy</option><option>Parituskoodi ei toimi</option><option>Näytönpeilaus ei käynnisty</option><option>TV:ssä ei näy kuvaa</option><option>Yhteys katkeaa tai kuva nykii</option><option>Muu ongelma</option></select></div>
+        <div><label for="android-version">Android-versio (valinnainen)</label><input id="android-version" type="text" placeholder="Esim. Android 15"></div>
+        <div><label for="device">Laite (valinnainen)</label><input id="device" type="text" placeholder="Esim. puhelimen tai TV-laitteen malli"></div>
+        <div><label for="details">Mitä tapahtui?</label><textarea id="details" required placeholder="Kuvaile ongelma ja mitä kokeilit. Älä lisää salasanoja tai parituskoodeja."></textarea></div>
+        <div class="actions"><button type="submit">Luo vikailmoitusteksti</button></div>
+      </form>
+      <div class="report-result" id="report-result" aria-live="polite"></div>
+      <div class="actions" id="report-actions" style="display:none"><button type="button" id="copy-report">Kopioi teksti</button><a class="button secondary" href="https://github.com/" target="_blank" rel="noopener noreferrer">Avaa GitHub</a></div>
+      <p class="small">Vaihda GitHub-linkki oman HupiCast-repositoriosi Issues-osoitteeksi, kun se on tiedossa.</p>
+    </section>
+
+    <footer>
+      <p>HupiCast • Yhteisön vianmäärityssivu</p>
+      <p>Älä julkaise GitHubissa salasanoja, henkilökohtaisia tietoja tai parituskoodeja.</p>
+    </footer>
+  </main>
+  <script>
+    const lastCheck = document.getElementById('last-check');
+    const refreshButton = document.getElementById('refresh-status');
+    function updateLocalTime() {
+      lastCheck.textContent = new Date().toLocaleString('fi-FI');
+    }
+    refreshButton.addEventListener('click', () => {
+      updateLocalTime();
+      const description = document.getElementById('status-description');
+      description.textContent = 'Sivun tiedot päivitettiin. Todellista yhteyttä HupiCastTV:hen ei ole testattu; tarkista laitteet alla olevilla ohjeilla.';
+    });
+    document.getElementById('reset-checks').addEventListener('click', () => {
+      document.querySelectorAll('.checklist input[type="checkbox"]').forEach(box => box.checked = false);
+    });
+    const form = document.getElementById('issue-form');
+    const result = document.getElementById('report-result');
+    const reportActions = document.getElementById('report-actions');
+    let generatedReport = '';
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const type = document.getElementById('issue-type').value;
+      const android = document.getElementById('android-version').value.trim() || 'Ei ilmoitettu';
+      const device = document.getElementById('device').value.trim() || 'Ei ilmoitettu';
+      const details = document.getElementById('details').value.trim();
+      generatedReport = `## Ongelman kuvaus\\n${type}\\n\\n## Laite ja ohjelmisto\\n- Android-versio: ${android}\\n- Laite: ${device}\\n\\n## Mitä tapahtui?\\n${details}\\n\\n## Kokeillut vaiheet\\n${[...document.querySelectorAll('.checklist input[type="checkbox"]')].map((box, i) => `- [${box.checked ? 'x' : ' '}] ${document.querySelector('label[for="' + box.id + '"]').textContent}`).join('\\n')}\\n\\n## Lisätiedot\\nÄlä lisää tähän salasanoja, parituskoodeja tai muita yksityisiä tietoja.`;
+      result.textContent = generatedReport;
+      result.style.display = 'block';
+      reportActions.style.display = 'flex';
+    });
+    document.getElementById('copy-report').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(generatedReport);
+        document.getElementById('copy-report').textContent = 'Kopioitu!';
+      } catch (error) {
+        const range = document.createRange();
+        range.selectNodeContents(result);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.getElementById('copy-report').textContent = 'Valitse teksti ja kopioi';
+      }
+    });
+    updateLocalTime();
+  </script>
+</body>
+</html>
